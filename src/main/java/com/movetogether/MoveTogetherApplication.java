@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MoveTogetherApplication {
 
+    //test
     public static void main(String[] args) {
         SpringApplication.run(MoveTogetherApplication.class, args);
     }
