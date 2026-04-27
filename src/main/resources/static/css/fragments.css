@@ -1,0 +1,42 @@
+/* ===== Navbar ===== */
+.main-nav {
+    height: 56px;
+}
+
+.main-nav .navbar-brand img {
+    vertical-align: middle;
+}
+
+/* ===== Footer ===== */
+.site-footer {
+    font-size: 0.9rem;
+}
+
+.footer-logo {
+    display: block;
+    margin: 0 auto;
+}
+
+/* ===== General ===== */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.hero-section {
+    min-height: 420px;
+    padding: 100px 0;
+    background-image: url('/images/section.png');
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center 80%;
+}

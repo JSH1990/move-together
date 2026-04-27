@@ -2,13 +2,21 @@ package com.movetogether.modules.account;
 
 import com.movetogether.infra.AbstractContainerBaseTest;
 import com.movetogether.infra.MockMvcTest;
+import com.movetogether.infra.mail.EmailMessage;
 import com.movetogether.infra.mail.EmailService;
+import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.acount.AccountRepository;
+import com.movetogether.modules.acount.AccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -17,7 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockMvcTest
 public class AccountControllerTest extends AbstractContainerBaseTest {
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @MockitoBean
     EmailService emailService;
@@ -32,4 +45,38 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
                 .andExpect(model().attributeExists("signUpForm"))
                 .andExpect(unauthenticated());
     }
+
+    @DisplayName("회원 가입 처리 - 입력값 오류")
+    @Test
+    void signUpForm_with_invalid_input() throws Exception {
+        mockMvc.perform(post("/sign-up")
+                        .param("nickname", "test")
+                        .param("email", "email..")
+                        .param("password", "12345")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/sign-up"))
+                .andExpect(unauthenticated());
+    }
+
+    @DisplayName("회원 가입 처리 - 입력값 정상")
+    @Test
+    void signUpForm_with_valid_input() throws Exception {
+        mockMvc.perform(post("/sign-up")
+                        .param("nickname", "test")
+                        .param("email", "tmdgus21@naver.com")
+                        .param("password", "12345678")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"))
+                .andExpect(authenticated().withUsername("test"));
+
+        Account account = accountRepository.findByEmail("tmdgus21@naver.com");
+        assertNotNull(account);
+        assertNotEquals(account.getPassword(), "12345678");
+        assertNotNull(account.getEmailCheckToken());
+        then(emailService).should().sendEmail(any(EmailMessage.class));
+    }
+
+
 }

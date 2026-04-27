@@ -40,8 +40,8 @@
             </li>
             <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a class="nav-link" th:href="@{/notifications}">
-                    <i th:if="${!hasNotification}" class="fa fa-bell-o" aria-hidden="true"></i>
-                    <span class="text-info" th:if="${hasNotification}"><i class="fa fa-bell" aria-hidden="true"></i></span>
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    <span class="text-info"><i class="fa fa-bell" aria-hidden="true"></i></span>
                 </a>
             </li>
             <li class="nav-item" sec:authorize="isAuthenticated()">
@@ -78,12 +78,43 @@
     <div class="container py-4 py-md-5">
         <div class="row justify-content-center text-center">
             <div class="col-12 col-md-auto">
-                <img class="footer-logo mb-2" src="/images/logo_long.png" alt="Move Together" width="132">
-                <p class="mb-1 text-muted small">함께 성장하는 커뮤니티, Move Together</p>
+                <img class="footer-logo mb-2" src="/images/logo_ft.png" alt="Move Together" width="32px">
+                <p class="mb-1 text-muted small">운동도 사람도 연결되는 곳, Move Together</p>
             </div>
         </div>
     </div>
 </footer>
+
+<div th:fragment="date-time">
+    <script src="/node_modules/moment/min/moment-with-locales.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            moment.locale('ko');
+            $(".date-time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLL');
+            });
+            $(".date").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LL');
+            });
+            $(".weekday").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('dddd');
+            });
+            $(".time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LT');
+            });
+            $(".calendar").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").calendar();
+            });
+            $(".fromNow").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
+            });
+            $(".date-weekday-time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLLL');
+            });
+        })
+    </script>
+</div>
+
 
 <script type="application/javascript" th:fragment="form-validation" th:src="@{/js/form-validation.js}" src="/js/form-validation.js"></script>
 

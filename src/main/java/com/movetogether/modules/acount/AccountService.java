@@ -83,7 +83,7 @@ public class AccountService implements UserDetailsService {
     }
 
     public void login(Account account) {
-        Authentication token = new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account),
                 account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
