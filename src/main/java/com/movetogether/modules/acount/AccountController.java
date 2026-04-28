@@ -115,10 +115,10 @@ public class AccountController {
         return "redirect:/email-login";
     }
 
-    @GetMapping("/login-by-eamil")
+    @GetMapping("/login-by-email")
     public String loginByEmail(String token, String email, Model model, HttpServletRequest request, HttpServletResponse response){
         Account account = accountRepository.findByEmail(email);
-        String view = "account/logged-by-email";
+        String view = "account/logged-in-by-email";
         if(account == null || !account.isValidToken(token)){
             model.addAttribute("error", "로그인 할 수 없습니다.");
             return view;

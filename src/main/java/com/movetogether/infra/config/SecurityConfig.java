@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/", "/login", "/sign-up", "/check-email-token",
-                                "/email-login", "/check-email-login", "/login-link", "/search/study").permitAll()
+                                "/email-login", "/check-email-login", "/login-link", "/search/study","/login-by-email").permitAll()
                         .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
                         .anyRequest().authenticated()
                 )

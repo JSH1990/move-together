@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -82,8 +83,8 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
     @Test
     void checkEmail_with_invalid_input() throws Exception {
         mockMvc.perform(get("/check-email-token")
-                .param("token", "invalid")
-                .param("email", "email@email.com"))
+                        .param("token", "invalid")
+                        .param("email", "email@email.com"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("error"))
                 .andExpect(view().name("account/checked-email"))
@@ -102,8 +103,8 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
         newAccount.generateEmailCheckToken();
 
         mockMvc.perform(get("/check-email-token")
-                .param("token", newAccount.getEmailCheckToken())
-                .param("email", newAccount.getEmail()))
+                        .param("token", newAccount.getEmailCheckToken())
+                        .param("email", newAccount.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("nickname"))
@@ -112,4 +113,35 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
                 .andExpect(authenticated().withUsername("test"));
     }
 
+    @DisplayName("메일 로그인 - 입력값 오류")
+    @Test
+    void loginByEmail_invalid_input() throws Exception {
+        mockMvc.perform(get("/login-by-email")
+                        .param("token", "invalid")
+                        .param("email", "test@test.com"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"))
+                .andExpect(view().name("account/logged-in-by-email"))
+                .andExpect(unauthenticated());
+    }
+
+    @DisplayName("메일 로그인 - 입력값 정상")
+    @Test
+    void loginByEmail_valid_input() throws Exception {
+        Account account = Account.builder()
+                .email("test@email.com")
+                .password("12345678")
+                .nickname("test")
+                .build();
+        Account newAccount = accountRepository.save(account);
+        newAccount.generateEmailCheckToken();
+
+        mockMvc.perform(get("/login-by-email")
+                        .param("token", newAccount.getEmailCheckToken())
+                        .param("email", newAccount.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(view().name("account/logged-in-by-email"))
+                .andExpect(authenticated().withUsername("test"));
+    }
 }
