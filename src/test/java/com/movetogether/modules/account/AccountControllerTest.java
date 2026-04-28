@@ -78,5 +78,38 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
         then(emailService).should().sendEmail(any(EmailMessage.class));
     }
 
+    @DisplayName("인증 메일 확인 - 입력값 오류")
+    @Test
+    void checkEmail_with_invalid_input() throws Exception {
+        mockMvc.perform(get("/check-email-token")
+                .param("token", "invalid")
+                .param("email", "email@email.com"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"))
+                .andExpect(view().name("account/checked-email"))
+                .andExpect(unauthenticated());
+    }
+
+    @DisplayName("인증 메일 확인 - 입력값 정상")
+    @Test
+    void checkEmail_with_valid_input() throws Exception {
+        Account account = Account.builder()
+                .email("test@email.com")
+                .password("12345678")
+                .nickname("test")
+                .build();
+        Account newAccount = accountRepository.save(account);
+        newAccount.generateEmailCheckToken();
+
+        mockMvc.perform(get("/check-email-token")
+                .param("token", newAccount.getEmailCheckToken())
+                .param("email", newAccount.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(model().attributeExists("nickname"))
+                .andExpect(model().attributeExists("numberOfUser"))
+                .andExpect(view().name("account/checked-email"))
+                .andExpect(authenticated().withUsername("test"));
+    }
 
 }

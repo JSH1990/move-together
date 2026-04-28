@@ -4,6 +4,8 @@ import com.movetogether.infra.config.AppProperties;
 import com.movetogether.infra.mail.EmailMessage;
 import com.movetogether.infra.mail.EmailService;
 import com.movetogether.modules.acount.form.SignUpForm;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +13,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
@@ -57,7 +61,7 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
-    private void sendSignUpConfirmEmail(Account newAccount) {
+    public void sendSignUpConfirmEmail(Account newAccount) {
         Context context = new Context();
         context.setVariable("link", "/check-email?token=" + newAccount.getEmailCheckToken() + "&email=" + newAccount.getEmail());
         context.setVariable("nickname", newAccount.getNickname());
@@ -82,11 +86,37 @@ public class AccountService implements UserDetailsService {
         return accountRepository.save(account);
     }
 
-    public void login(Account account) {
+    public void login(Account account, HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account),
                 account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(token);
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        new HttpSessionSecurityContextRepository().saveContext(context, request, response);
+    }
+
+    public void completeSignUp(Account account, HttpServletRequest request, HttpServletResponse response) {
+        account.completeSignUp();
+        login(account,request, response);
+    }
+
+    public void sendLoginLink(Account account) {
+        Context context = new Context();
+        context.setVariable("link", "/login-by-email?token=" + account.getEmailCheckToken() +
+                "&email=" + account.getEmail());
+        context.setVariable("nickname", account.getNickname());
+        context.setVariable("linkName", "Move Together 로그인하기");
+        context.setVariable("message", "로그인 하려면 아래 링크를 클릭하세요.");
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/simple-link", context);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(account.getEmail())
+                .subject("Move Together, 로그인 링크")
+                .message(message)
+                .build();
+        emailService.sendEmail(emailMessage);
     }
 }
