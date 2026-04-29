@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -142,6 +143,18 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(view().name("account/logged-in-by-email"))
+                .andExpect(authenticated().withUsername("test"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("프로필 화면 보이는지 확인")
+    @Test
+    void showProfile() throws Exception {
+        mockMvc.perform(get("/profile/{nickname}", "test"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("isOwner"))
+                .andExpect(view().name("account/profile"))
                 .andExpect(authenticated().withUsername("test"));
     }
 }

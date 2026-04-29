@@ -3,6 +3,7 @@ package com.movetogether.modules.acount;
 import com.movetogether.infra.config.AppProperties;
 import com.movetogether.infra.mail.EmailMessage;
 import com.movetogether.infra.mail.EmailService;
+import com.movetogether.modules.acount.form.Profile;
 import com.movetogether.modules.acount.form.SignUpForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -118,5 +119,18 @@ public class AccountService implements UserDetailsService {
                 .message(message)
                 .build();
         emailService.sendEmail(emailMessage);
+    }
+
+    public Account getAccount(String nickname) {
+        Account account = accountRepository.findByNickname(nickname);
+        if (account == null) {
+            throw new IllegalArgumentException(nickname + "에 해당되는 사용자가 없습니다.");
+        }
+        return account;
+    }
+
+    public void updateProfile(Account account, Profile profile) {
+        modelMapper.map(profile, account);
+        accountRepository.save(account);
     }
 }
