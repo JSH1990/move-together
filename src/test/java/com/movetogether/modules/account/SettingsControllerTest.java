@@ -68,4 +68,84 @@ public class SettingsControllerTest extends AbstractContainerBaseTest {
         Account test = accountRepository.findByNickname("test");
         assertNull(test.getBio());
     }
+
+    @WithAccount("test")
+    @DisplayName("닉네임 수정 화면 보이는지 확인")
+    @Test
+    void updateNickname() throws Exception{
+        mockMvc.perform(get("/settings/account"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/account"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("nicknameForm"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("닉네임 수정하기 - 입력값 정상")
+    @Test
+    void updateNickname_with_valid_input() throws Exception{
+        String newNickname = "test2";
+        mockMvc.perform(post("/settings/account")
+                .param("nickname", newNickname)
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings/account"))
+                .andExpect(flash().attributeExists("message"));
+
+        assertNotNull(accountRepository.findByNickname(newNickname));
+    }
+
+    @WithAccount("test")
+    @DisplayName("닉네임 수정하기 - 입력값 에러")
+    @Test
+    void updateNickname_with_invalid_input() throws Exception{
+        String newNickname = "\\_";
+        mockMvc.perform(post("/settings/account")
+                        .param("nickname", newNickname)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/account"))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("nicknameForm"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("패스워드 수정 화면 보이는지 확인")
+    @Test
+    void updatePassword() throws Exception{
+        mockMvc.perform(get("/settings/password"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/password"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("passwordForm"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("패스워드 수정 - 입력값 정상")
+    @Test
+    void updatePassword_with_valid_input() throws Exception {
+        mockMvc.perform(post("/settings/password")
+                .param("newPassword", "12345678")
+                .param("newPasswordConfirm", "12345678")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings/password"))
+                .andExpect(flash().attributeExists("message"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("패스워드 수정 - 입력값 비정상")
+    @Test
+    void updatePassword_with_invalid_input() throws Exception {
+        mockMvc.perform(post("/settings/password")
+                .param("newPassword", "12345678")
+                .param("newPasswordConfirm", "1234567")
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/password"))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeExists("passwordForm"))
+                .andExpect(model().attributeExists("account"));
+    }
 }

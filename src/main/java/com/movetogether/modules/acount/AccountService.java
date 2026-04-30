@@ -8,8 +8,11 @@ import com.movetogether.modules.acount.form.SignUpForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -131,6 +134,17 @@ public class AccountService implements UserDetailsService {
 
     public void updateProfile(Account account, Profile profile) {
         modelMapper.map(profile, account);
+        accountRepository.save(account);
+    }
+
+    public void updateNickname(Account account, String nickname , HttpServletRequest request, HttpServletResponse response) {
+        account.setNickname(nickname);
+        accountRepository.save(account);
+        login(account, request, response);
+    }
+
+    public void updatePassword(Account account, String newPassword) {
+        account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
     }
 }
