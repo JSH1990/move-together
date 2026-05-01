@@ -1,9 +1,12 @@
 package com.movetogether.modules.acount;
 
+import com.movetogether.modules.tag.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -39,19 +42,22 @@ public class Account {
     @Lob @Basic(fetch = FetchType.EAGER)
     private String profileImage;
 
-    private boolean moveCreatedByEmail;
-
     private LocalDateTime emailCheckTokenGeneratedAt;
 
-    private boolean moveCreatedByWeb;
+    private boolean clubCreatedByEmail;
 
-    private boolean moveEnrollmentResultByEmail;
+    private boolean clubCreatedByWeb = true;
 
-    private boolean moveEnrollmentResultByWeb;
+    private boolean clubEnrollmentResultByEmail;
 
-    private boolean moveUpdatedByEmail;
+    private boolean clubEnrollmentResultByWeb = true;
 
-    private boolean moveUpdatedByWeb;
+    private boolean clubUpdatedByEmail;
+
+    private boolean clubUpdatedByWeb = true;
+
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
 
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();

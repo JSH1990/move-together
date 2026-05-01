@@ -3,8 +3,10 @@ package com.movetogether.modules.acount;
 import com.movetogether.infra.config.AppProperties;
 import com.movetogether.infra.mail.EmailMessage;
 import com.movetogether.infra.mail.EmailService;
+import com.movetogether.modules.acount.form.Notifications;
 import com.movetogether.modules.acount.form.Profile;
 import com.movetogether.modules.acount.form.SignUpForm;
+import com.movetogether.modules.tag.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -30,6 +32,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -146,5 +150,22 @@ public class AccountService implements UserDetailsService {
     public void updatePassword(Account account, String newPassword) {
         account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
+    }
+
+    public void updateNotifications(Account account, Notifications notifications) {
+        modelMapper.map(notifications, account);
+        accountRepository.save(account);
+    }
+
+    public Set<Tag> getTags(Account account) {
+        return account.getTags();
+    }
+
+    public void addTag(Account account, Tag tag) {
+        account.getTags().add(tag);
+    }
+
+    public void removeTag(Account account, Tag tag) {
+        account.getTags().remove(tag);
     }
 }

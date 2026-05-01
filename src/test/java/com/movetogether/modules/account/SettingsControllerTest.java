@@ -4,10 +4,16 @@ import com.movetogether.infra.AbstractContainerBaseTest;
 import com.movetogether.infra.MockMvcTest;
 import com.movetogether.modules.acount.Account;
 import com.movetogether.modules.acount.AccountRepository;
+import com.movetogether.modules.acount.AccountService;
+import com.movetogether.modules.tag.Tag;
+import com.movetogether.modules.tag.TagForm;
+import com.movetogether.modules.tag.TagRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -24,6 +30,13 @@ public class SettingsControllerTest extends AbstractContainerBaseTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    private TagRepository tagRepository;
+    @Autowired
+    private AccountService accountService;
 
     @WithAccount("test")
     @DisplayName("프로필 수정 화면 보이는지 확인")
@@ -148,4 +161,95 @@ public class SettingsControllerTest extends AbstractContainerBaseTest {
                 .andExpect(model().attributeExists("passwordForm"))
                 .andExpect(model().attributeExists("account"));
     }
+
+    @WithAccount("test")
+    @DisplayName("알림 설정 화면 보이는지 확인")
+    @Test
+    void updateNotifications() throws Exception{
+        mockMvc.perform(get("/settings/notifications"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/notifications"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("notifications"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("알림 설정 수정 성공")
+    @Test
+    void updateNotifications_success() throws Exception {
+        mockMvc.perform(post("/settings/notifications")
+                        .param("clubCreatedByEmail", "true")
+                        .param("clubCreatedByWeb", "true")
+                        .param("clubEnrollmentResultByEmail", "false")
+                        .param("clubEnrollmentResultByWeb", "true")
+                        .param("clubUpdatedByEmail", "true")
+                        .param("clubUpdatedByWeb", "false")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings/notifications"))
+                .andExpect(flash().attributeExists("message"));
+
+        Account account = accountRepository.findByNickname("test");
+
+        assertTrue(account.isClubCreatedByEmail());
+        assertTrue(account.isClubCreatedByWeb());
+        assertFalse(account.isClubEnrollmentResultByEmail());
+        assertTrue(account.isClubEnrollmentResultByWeb());
+        assertTrue(account.isClubUpdatedByEmail());
+        assertFalse(account.isClubUpdatedByWeb());
+    }
+
+    @WithAccount("test")
+    @DisplayName("태그 수정 화면 보이는지 확인")
+    @Test
+    void updateTags() throws Exception{
+        mockMvc.perform(get("/settings/tags"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/tags"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("tagList"))
+                .andExpect(model().attributeExists("tags"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("태그 추가")
+    @Test
+    void addTag() throws Exception{
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("newTag");
+
+        mockMvc.perform(post("/settings/tags/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tagForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Tag newTag = tagRepository.findByTitle("newTag");
+        assertNotNull(newTag);
+        Account test = accountRepository.findByNickname("test");
+        assertTrue(test.getTags().contains(newTag));
+    }
+
+    @WithAccount("test")
+    @DisplayName("태그 삭제")
+    @Test
+    void removeTag() throws Exception{
+        Account test = accountRepository.findByNickname("test");
+        Tag newTag = tagRepository.save(Tag.builder().title("newTag").build());
+        accountService.addTag(test, newTag);
+
+        assertTrue(test.getTags().contains(newTag));
+
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("newTag");
+
+        mockMvc.perform(post("/settings/tags/remove")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tagForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        assertFalse(test.getTags().contains(newTag));
+    }
+
 }
