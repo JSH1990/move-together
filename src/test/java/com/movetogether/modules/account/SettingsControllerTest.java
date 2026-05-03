@@ -8,6 +8,11 @@ import com.movetogether.modules.acount.AccountService;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.tag.TagForm;
 import com.movetogether.modules.tag.TagRepository;
+import com.movetogether.modules.zone.Zone;
+import com.movetogether.modules.zone.ZoneForm;
+import com.movetogether.modules.zone.ZoneRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +37,29 @@ public class SettingsControllerTest extends AbstractContainerBaseTest {
     AccountRepository accountRepository;
 
     @Autowired
+    ZoneRepository zoneRepository;
+
+    @Autowired
     ObjectMapper objectMapper;
+
     @Autowired
     private TagRepository tagRepository;
+
     @Autowired
     private AccountService accountService;
+
+    private Zone testZone = Zone.builder().city("test").localNameOfCity("testCity").province("testProvince").build();
+
+    @BeforeEach
+    void beforeEach() {
+        zoneRepository.save(testZone);
+    }
+
+    @AfterEach
+    void afterEach() {
+        accountRepository.deleteAll();
+        zoneRepository.deleteAll();
+    }
 
     @WithAccount("test")
     @DisplayName("프로필 수정 화면 보이는지 확인")
@@ -252,4 +275,32 @@ public class SettingsControllerTest extends AbstractContainerBaseTest {
         assertFalse(test.getTags().contains(newTag));
     }
 
+    @WithAccount("test")
+    @DisplayName("지역 정보 화면 보이는지 확인")
+    @Test
+    void updateZonesForm() throws Exception{
+        mockMvc.perform(get("/settings/zones"))
+                .andExpect(view().name("settings/zones"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("zoneList"))
+                .andExpect(model().attributeExists("zones"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("지역 정보 추가")
+    @Test
+    void addZone() throws Exception{
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(testZone.toString());
+
+        mockMvc.perform(post("/settings/zones/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(zoneForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Account test = accountRepository.findByNickname("test");
+        Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+        assertTrue(test.getZones().contains(zone));
+    }
 }

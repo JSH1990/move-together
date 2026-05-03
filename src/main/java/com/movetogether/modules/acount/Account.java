@@ -1,6 +1,7 @@
 package com.movetogether.modules.acount;
 
 import com.movetogether.modules.tag.Tag;
+import com.movetogether.modules.zone.Zone;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -58,6 +59,9 @@ public class Account {
 
     @ManyToMany
     private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany
+    private Set<Zone> zones = new HashSet<>();
 
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();

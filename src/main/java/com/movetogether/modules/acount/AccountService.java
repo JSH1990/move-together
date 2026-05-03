@@ -7,6 +7,7 @@ import com.movetogether.modules.acount.form.Notifications;
 import com.movetogether.modules.acount.form.Profile;
 import com.movetogether.modules.acount.form.SignUpForm;
 import com.movetogether.modules.tag.Tag;
+import com.movetogether.modules.zone.Zone;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -52,11 +53,11 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(emailOrNickname);
-        if(account == null) {
+        if (account == null) {
             account = accountRepository.findByNickname(emailOrNickname);
         }
 
-        if(account == null) {
+        if (account == null) {
             throw new UsernameNotFoundException(emailOrNickname);
         }
 
@@ -107,7 +108,7 @@ public class AccountService implements UserDetailsService {
 
     public void completeSignUp(Account account, HttpServletRequest request, HttpServletResponse response) {
         account.completeSignUp();
-        login(account,request, response);
+        login(account, request, response);
     }
 
     public void sendLoginLink(Account account) {
@@ -141,7 +142,7 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(account);
     }
 
-    public void updateNickname(Account account, String nickname , HttpServletRequest request, HttpServletResponse response) {
+    public void updateNickname(Account account, String nickname, HttpServletRequest request, HttpServletResponse response) {
         account.setNickname(nickname);
         accountRepository.save(account);
         login(account, request, response);
@@ -157,15 +158,33 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(account);
     }
 
-    public Set<Tag> getTags(Account account) {
-        return account.getTags();
+    public void addTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().add(tag));
     }
 
-    public void addTag(Account account, Tag tag) {
-        account.getTags().add(tag);
+    public Set<Tag> getTags(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getTags();
     }
 
     public void removeTag(Account account, Tag tag) {
-        account.getTags().remove(tag);
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().remove(tag));
+    }
+
+    public Set<Zone> getZones(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getZones();
+    }
+
+    public void addZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().add(zone));
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().remove(zone));
     }
 }
