@@ -82,22 +82,22 @@ public class ClubControllerTest extends AbstractContainerBaseTest {
         assertNull(club);
     }
 
-//    @WithAccount("test")
-//    @DisplayName("클럽 화면 나오는지 확인")
-//    @Test
-//    void viewClub() throws Exception {
-//        Club club = new Club();
-//        club.setPath("test-path");
-//        club.setTitle("testTitle");
-//        club.setShortDescription("testShortDescription");
-//        club.setFullDescription("testFullDescription");
-//
-//        Account test = accountRepository.findByNickname("test");
-//        clubService.createNewClub(club, test);
-//
-//        mockMvc.perform(get("/club/test-path"))
-//                .andExpect(view().name("club/view"))
-//                .andExpect(model().attributeExists("account"))
-//                .andExpect(model().attributeExists("club"));
-//    }
+    @WithAccount("test")
+    @DisplayName("클럽 화면 나오는지 확인")
+    @Test
+    void viewClub() throws Exception {
+        Club club = new Club();
+        club.setPath("test-path");
+        club.setTitle("testTitle");
+        club.setShortDescription("testShortDescription");
+        club.setFullDescription("testFullDescription");
+
+        Account test = accountRepository.findByNickname("test");
+        clubService.createNewClub(club, test);
+
+        mockMvc.perform(get("/club/test-path"))
+                .andExpect(view().name("club/view"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("club"));
+    }
 }

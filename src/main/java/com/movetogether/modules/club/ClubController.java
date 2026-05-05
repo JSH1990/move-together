@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +32,13 @@ public class ClubController {
     @InitBinder("clubForm")
     public void clubFormInitBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(clubFormValidator);
+    }
+
+    @GetMapping("/club")
+    private String clubList(@CurrentAccount Account account, Model model) {
+        List<Club> myClubs = clubService.findMyClubs(account);
+        model.addAttribute("myClubs", myClubs);
+        return "club/list";
     }
 
     @GetMapping("/new-club")

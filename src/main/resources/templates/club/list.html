@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments.html :: head}"></head>
+
+<body class="bg-light">
+<div th:replace="~{fragments.html :: main-nav}"></div>
+
+<main class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">내 클럽 목록</h2>
+            <p class="text-muted mb-0">내가 만든 클럽을 확인하고 관리할 수 있습니다.</p>
+        </div>
+
+        <a th:href="@{/club/new}" class="btn btn-primary">
+            + 클럽 만들기
+        </a>
+    </div>
+
+    <!-- 클럽이 없을 때 -->
+    <div th:if="${#lists.isEmpty(myClubs)}"
+         class="card border-0 shadow-sm text-center py-5">
+
+        <div class="card-body">
+            <h5 class="fw-bold mb-2">아직 만든 클럽이 없습니다.</h5>
+            <p class="text-muted mb-4">
+                새로운 클럽을 만들고 함께 운동할 사람들을 모집해보세요.
+            </p>
+
+            <a th:href="@{/new-club}" class="btn btn-primary">
+                첫 클럽 만들기
+            </a>
+        </div>
+    </div>
+
+    <!-- 클럽 목록 -->
+    <div th:if="${!#lists.isEmpty(myClubs)}" class="row g-4">
+
+        <div class="col-md-6 col-lg-4" th:each="myClub : ${myClubs}">
+            <div class="card h-100 border-0 shadow-sm">
+
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-2"
+                        th:text="${myClub.title}">
+                        클럽 이름
+                    </h5>
+
+                    <p class="card-text text-muted small mb-3"
+                       th:text="${myClub.shortDescription}">
+                        클럽 설명이 들어갑니다.
+                    </p>
+
+                    <div class="mb-3">
+                        <span class="badge bg-primary me-1">운동</span>
+                        <span class="badge bg-secondary">지역</span>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        내 클럽
+                    </small>
+
+                    <a th:href="@{'/club/' + ${myClub.path}}"
+                       class="btn btn-sm btn-outline-primary">
+                        보기
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments.html :: footer}"></div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.movetogether.modules.club;
 
 import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.acount.UserAccount;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.zone.Zone;
 import jakarta.persistence.*;
@@ -62,5 +63,19 @@ public class Club {
 
     public void addManager(Account account) {
         this.managers.add(account);
+    }
+
+    public boolean isManager(UserAccount userAccount) {
+        return this.managers.contains(userAccount.getAccount());
+    }
+
+    public boolean isMember(UserAccount userAccount) {
+        return this.members.contains(userAccount.getAccount());
+    }
+
+    public boolean isJoinable(UserAccount userAccount) {
+        Account account = userAccount.getAccount();
+        return this.isPublished() && this.isRecruiting()
+                && !this.members.contains(account) && !this.managers.contains(account);
     }
 }

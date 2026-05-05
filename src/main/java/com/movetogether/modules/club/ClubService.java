@@ -6,6 +6,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,5 +32,9 @@ public class ClubService {
         if (club == null){
             throw new IllegalArgumentException(path + "에 해당하는 스터디가 없습니다.");
         }
+    }
+
+    public List<Club> findMyClubs(Account account) {
+        return clubRepository.findByManagersContains(account);
     }
 }
