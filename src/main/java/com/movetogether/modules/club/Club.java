@@ -7,6 +7,8 @@ import com.movetogether.modules.zone.Zone;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -77,5 +79,23 @@ public class Club {
         Account account = userAccount.getAccount();
         return this.isPublished() && this.isRecruiting()
                 && !this.members.contains(account) && !this.managers.contains(account);
+    }
+
+    public void addMember(Account account) {
+        this.getMembers().add(account);
+        this.memberCount++;
+    }
+
+    public String getEncodePath() {
+        return URLEncoder.encode(this.path, StandardCharsets.UTF_8);
+    }
+
+    public void removeMember(Account account) {
+        this.getMembers().remove(account);
+        this.memberCount--;
+    }
+
+    public boolean isManagerBy(Account account) {
+        return this.getManagers().contains(account);
     }
 }

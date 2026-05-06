@@ -3,6 +3,7 @@ package com.movetogether.modules.club;
 import com.movetogether.modules.acount.Account;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +30,33 @@ public class ClubService {
     }
 
     private void checkIfExistingClub(String path, Club club) {
-        if (club == null){
+        if (club == null) {
             throw new IllegalArgumentException(path + "에 해당하는 스터디가 없습니다.");
         }
     }
 
     public List<Club> findMyClubs(Account account) {
         return clubRepository.findByManagersContains(account);
+    }
+
+    public void addMember(Club club, Account account) {
+        club.addMember(account);
+    }
+
+
+    public void removeMember(Club club, Account account) {
+        club.removeMember(account);
+    }
+
+    public Club getClubToUpdate(Account account, String path) {
+        Club club = this.getClub(path);
+        checkIfManager(account, club);
+        return club;
+    }
+
+    private void checkIfManager(Account account, Club club) {
+        if (!club.isManagerBy(account)){
+            throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
+        }
     }
 }

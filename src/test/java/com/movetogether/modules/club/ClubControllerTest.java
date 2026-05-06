@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -99,5 +100,56 @@ public class ClubControllerTest extends AbstractContainerBaseTest {
                 .andExpect(view().name("club/view"))
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attributeExists("club"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("내가 개설한 클럽들이 화면 나오는지 확인")
+    @Test
+    void viewMyClubs() throws Exception {
+        Account account = accountRepository.findByNickname("test");
+
+        Club club = new Club();
+        club.setPath("test-path");
+        club.setTitle("testTitle");
+        club.addManager(account);
+
+        clubRepository.save(club);
+
+        mockMvc.perform(get("/club"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("club/list"))
+                .andExpect(model().attributeExists("myClubs"))
+                .andExpect(content().string(containsString("testTitle")));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 가입")
+    @Test
+    void joinClub() throws Exception {
+        Account test2 = accountFactory.createAccount("test2");
+        Club club = clubFactory.createClub("test-path", test2);
+
+        mockMvc.perform(get("/club/" + club.getPath() + "/join"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/club/" + club.getPath() + "/members"));
+
+        Account test = accountRepository.findByNickname("test");
+        assertTrue(club.getMembers().contains(test));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 탈퇴")
+    @Test
+    void leaveClub() throws Exception {
+        Account test2 = accountFactory.createAccount("test2");
+        Club club = clubFactory.createClub("test-path", test2);
+        Account test = accountRepository.findByNickname("test");
+        clubService.addMember(club, test);
+
+        mockMvc.perform(get("/club/" + club.getPath() + "/leave"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/club/" + club.getPath() + "/members"));
+
+        assertFalse(club.getMembers().contains(test));
     }
 }
