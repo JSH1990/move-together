@@ -37,7 +37,7 @@ public class AccountControllerTest extends AbstractContainerBaseTest {
     @MockitoBean
     EmailService emailService;
 
-    @DisplayName("회원 가입 화면 보이는지 테스트")
+    @DisplayName("회원 가입 화면 보이는지 확인")
     @Test
     void signUpForm() throws Exception {
         mockMvc.perform(get("/sign-up"))

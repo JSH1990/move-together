@@ -1,8 +1,12 @@
 package com.movetogether.modules.club;
 
 import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.club.event.ClubUpdateEvent;
+import com.movetogether.modules.club.form.ClubDescriptionForm;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +20,7 @@ public class ClubService {
 
     private final ClubRepository clubRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Club createNewClub(Club club, Account account) {
         Club newClub = clubRepository.save(club);
@@ -31,7 +36,7 @@ public class ClubService {
 
     private void checkIfExistingClub(String path, Club club) {
         if (club == null) {
-            throw new IllegalArgumentException(path + "에 해당하는 스터디가 없습니다.");
+            throw new IllegalArgumentException(path + "에 해당하는 클럽이 없습니다.");
         }
     }
 
@@ -58,5 +63,21 @@ public class ClubService {
         if (!club.isManagerBy(account)){
             throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
         }
+    }
+
+    public void updateClubDescription(Club club,  ClubDescriptionForm clubDescriptionForm) {
+        modelMapper.map(clubDescriptionForm, club);
+    }
+
+    public void enableClubBanner(Club club) {
+        club.setUseBanner(true);
+    }
+
+    public void disableClubBanner(Club club) {
+        club.setUseBanner(false);
+    }
+
+    public void updateClubImage(Club club, String image) {
+        club.setImage(image);
     }
 }

@@ -17,6 +17,7 @@
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/node_modules/jdenticon/dist/jdenticon.min.js"></script>
     <script th:fragment="form-validation" th:src="@{/js/form-validation.js}"></script>
+
 </head>
 
 <nav th:fragment="main-nav" class="main-nav navbar navbar-expand-sm navbar-dark bg-dark px-3 px-md-4">
@@ -375,7 +376,11 @@
 </div>
 
 <div th:fragment="club-banner" th:if="${club.useBanner}" class="row" id="club-logo">
-    <img th:src="${club.image}"/>
+    <div class="col-12 p-0">
+        <img class="img-fluid w-100 rounded"
+             th:src="${#strings.isEmpty(club.image) ? '/images/defaultBanner.png' : club.image}"
+             th:alt="${club.title}"/>
+    </div>
 </div>
 
 </html>
