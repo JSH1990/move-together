@@ -3,21 +3,24 @@ package com.movetogether.modules.club;
 import com.movetogether.modules.acount.Account;
 import com.movetogether.modules.acount.CurrentAccount;
 import com.movetogether.modules.club.form.ClubDescriptionForm;
+import com.movetogether.modules.tag.Tag;
+import com.movetogether.modules.tag.TagForm;
 import com.movetogether.modules.tag.TagRepository;
 import com.movetogether.modules.tag.TagService;
 import com.movetogether.modules.zone.ZoneRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/club/{path}/settings")
@@ -88,4 +91,40 @@ public class ClubSettingsController {
         clubService.disableClubBanner(club);
         return "redirect:/club/" + club.getEncodePath() + "/settings/banner";
     }
+
+    @GetMapping("/tags")
+    public String clubTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Club club = clubService.getClubToUpdate(account, path);
+        model.addAttribute(account);
+        model.addAttribute(club);
+
+        model.addAttribute("tags", club.getTags().stream().map(Tag::getTitle).collect(Collectors.toList()));
+        List<String> allTagTitles = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+        model.addAttribute("tagList", objectMapper.writeValueAsString(allTagTitles));
+        return "club/settings/tags";
+    }
+
+    @PostMapping("/tags/add")
+    @ResponseBody
+    public ResponseEntity addTag(@CurrentAccount Account account, @PathVariable String path, @RequestBody TagForm tagForm){
+        Club club = clubService.getClubToUpdate(account, path);
+        Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
+        clubService.addTag(club, tag);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/tags/remove")
+    @ResponseBody
+    public ResponseEntity removeTag(@CurrentAccount Account account, @PathVariable String path,
+                                    @RequestBody TagForm tagForm){
+        Club club = clubService.getClubToUpdate(account, path);
+        Tag tag = tagRepository.findByTitle(tagForm.getTagTitle());
+        if(tag == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        clubService.removeTag(club, tag);
+        return ResponseEntity.ok().build();
+    }
+
 }

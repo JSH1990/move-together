@@ -6,13 +6,18 @@ import com.movetogether.modules.account.AccountFactory;
 import com.movetogether.modules.account.WithAccount;
 import com.movetogether.modules.acount.Account;
 import com.movetogether.modules.acount.AccountRepository;
+import com.movetogether.modules.tag.Tag;
+import com.movetogether.modules.tag.TagForm;
+import com.movetogether.modules.tag.TagRepository;
+import com.movetogether.modules.tag.TagService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,6 +31,14 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @Autowired AccountFactory accountFactory;
     @Autowired AccountRepository accountRepository;
     @Autowired ClubRepository clubRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private TagRepository tagRepository;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private ClubService clubService;
 
     @WithAccount("test")
     @DisplayName("클럽 소개 수정 화면 보이는지 확인 - 성공")
@@ -152,5 +165,66 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         Club updatedClub = clubRepository.findByPath(club.getPath());
         assertFalse(updatedClub.isUseBanner());
     }
+
+    @WithAccount("test")
+    @DisplayName("클럽 태그 화면 나오는지")
+    @Test
+    void updateTagsForm() throws Exception{
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        mockMvc.perform(get("/club/" + club.getEncodePath() + "/settings/tags"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("club/settings/tags"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("tagList"))
+                .andExpect(model().attributeExists("tags"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 태그 추가")
+    @Test
+    void addTag() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+        TagForm tagForm = new TagForm();
+        
+        tagForm.setTagTitle("testTag");
+        
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/tags/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tagForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Tag newTag = tagRepository.findByTitle("testTag");
+        assertNotNull(newTag);
+        Club updatedClub  = clubRepository.findByPath("test-path");
+        assertTrue(updatedClub.getTags().contains(newTag));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 태그 삭제")
+    @Test
+    void removeTag() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        Tag tag = tagService.findOrCreateNew("testTag");
+        clubService.addTag(club, tag);
+
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("testTag");
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/tags/remove")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tagForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Club updatedClub = clubRepository.findByPath(club.getPath());
+        assertFalse(updatedClub.getTags().contains(tag));
+    }
+
 
 }

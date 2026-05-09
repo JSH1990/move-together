@@ -18,4 +18,12 @@ public class TagService {
         }
         return tag;
     }
+
+    public Tag findOrCreateNew(String tagTitle) {
+        Tag tag = tagRepository.findByTitle(tagTitle);
+        if (tag == null) {
+            tag = tagRepository.save(Tag.builder().title(tagTitle).build());
+        }
+        return tag;
+    }
 }

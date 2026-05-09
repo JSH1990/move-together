@@ -3,6 +3,7 @@ package com.movetogether.modules.club;
 import com.movetogether.modules.acount.Account;
 import com.movetogether.modules.club.event.ClubUpdateEvent;
 import com.movetogether.modules.club.form.ClubDescriptionForm;
+import com.movetogether.modules.tag.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -79,5 +80,14 @@ public class ClubService {
 
     public void updateClubImage(Club club, String image) {
         club.setImage(image);
+    }
+
+    public void addTag(Club club, Tag tag) {
+        club.getTags().add(tag);
+
+    }
+
+    public void removeTag(Club club, Tag tag) {
+        club.getTags().remove(tag);
     }
 }
