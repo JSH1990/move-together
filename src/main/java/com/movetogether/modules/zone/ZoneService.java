@@ -2,6 +2,7 @@ package com.movetogether.modules.zone;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class ZoneService {
@@ -39,6 +41,7 @@ public class ZoneService {
                             .build())
                     .toList();
 
+            log.info("zoneList" + zoneList);
             zoneRepository.saveAll(zoneList);
         }
     }

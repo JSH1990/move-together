@@ -10,6 +10,11 @@ import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.tag.TagForm;
 import com.movetogether.modules.tag.TagRepository;
 import com.movetogether.modules.tag.TagService;
+import com.movetogether.modules.zone.Zone;
+import com.movetogether.modules.zone.ZoneForm;
+import com.movetogether.modules.zone.ZoneRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +44,21 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     private TagService tagService;
     @Autowired
     private ClubService clubService;
+    @Autowired
+    private ZoneRepository zoneRepository;
+
+    private Zone testZone = Zone.builder().city("test").localNameOfCity("testCity").province("testProvince").build();
+
+    @BeforeEach
+    void beforeEach() {
+        zoneRepository.save(testZone);
+    }
+
+    @AfterEach
+    void afterEach() {
+//        accountRepository.deleteAll();
+        zoneRepository.deleteAll();
+    }
 
     @WithAccount("test")
     @DisplayName("클럽 소개 수정 화면 보이는지 확인 - 성공")
@@ -167,7 +187,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     }
 
     @WithAccount("test")
-    @DisplayName("클럽 태그 화면 나오는지")
+    @DisplayName("클럽 태그 화면 나오는지 확인")
     @Test
     void updateTagsForm() throws Exception{
         Account test = accountRepository.findByNickname("test");
@@ -226,5 +246,63 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         assertFalse(updatedClub.getTags().contains(tag));
     }
 
+    @WithAccount("test")
+    @DisplayName("클럽 Zones 화면 보이는지 확인")
+    @Test
+    void updateZoneForm() throws  Exception{
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
 
+        mockMvc.perform(get("/club/" + club.getEncodePath() + "/settings/zones"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("club/settings/zones"))
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("zones"))
+                .andExpect(model().attributeExists("zoneList"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 Zones 추가")
+    @Test
+    void addZone() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(testZone.toString());
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/zones/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(zoneForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Club updatedClub  = clubRepository.findByPath(club.getPath());
+        Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+        assertTrue(updatedClub .getZones().contains(zone));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 Zones 삭제")
+    @Test
+    void removeZone() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
+
+        clubService.addZone(club, zone);
+
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setZoneName(zone.toString());
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/zones/remove")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(zoneForm))
+                .with(csrf()))
+                .andExpect(status().isOk());
+
+        Club updateClub = clubRepository.findByPath(club.getPath());
+        assertFalse(updateClub.getZones().contains(zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince())));
+    }
 }

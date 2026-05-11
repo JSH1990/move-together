@@ -7,6 +7,8 @@ import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.tag.TagForm;
 import com.movetogether.modules.tag.TagRepository;
 import com.movetogether.modules.tag.TagService;
+import com.movetogether.modules.zone.Zone;
+import com.movetogether.modules.zone.ZoneForm;
 import com.movetogether.modules.zone.ZoneRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -127,4 +129,54 @@ public class ClubSettingsController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/zones")
+    public String clubZoneForm(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Club club = clubService.getClubToUpdate(account, path);
+        model.addAttribute(account);
+        model.addAttribute(club);
+
+        model.addAttribute("zones", club.getZones().stream().map(Zone::toString).collect(Collectors.toList()));
+        List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString).collect(Collectors.toList());
+        model.addAttribute("zoneList", objectMapper.writeValueAsString(allZones));
+        return "club/settings/zones";
+    }
+
+    @PostMapping("/zones/add")
+    @ResponseBody
+    public ResponseEntity addZone(@CurrentAccount Account account, @PathVariable String path,
+                          @RequestBody ZoneForm zoneForm){
+
+        Club club = clubService.getClubToUpdate(account, path);
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        if (club == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        clubService.addZone(club, zone);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/zones/remove")
+    @ResponseBody
+    public ResponseEntity removeZone(@CurrentAccount Account account, @PathVariable String path,
+                                     @RequestBody ZoneForm zoneForm){
+        Club club = clubService.getClubToUpdate(account, path);
+        Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
+        if (zone == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        clubService.removeZone(club, zone);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/club")
+    public String clubSettingForm(@CurrentAccount Account account, @PathVariable String path,
+                                  Model model){
+        Club club = clubService.getClubToUpdate(account, path);
+
+        model.addAttribute(account);
+        model.addAttribute(club);
+        return "club/settings/club";
+    }
 }

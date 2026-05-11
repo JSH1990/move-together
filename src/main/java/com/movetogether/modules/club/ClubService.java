@@ -4,6 +4,7 @@ import com.movetogether.modules.acount.Account;
 import com.movetogether.modules.club.event.ClubUpdateEvent;
 import com.movetogether.modules.club.form.ClubDescriptionForm;
 import com.movetogether.modules.tag.Tag;
+import com.movetogether.modules.zone.Zone;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -89,5 +90,13 @@ public class ClubService {
 
     public void removeTag(Club club, Tag tag) {
         club.getTags().remove(tag);
+    }
+
+    public void addZone(Club club, Zone zone) {
+        club.getZones().add(zone);
+    }
+
+    public void removeZone(Club club, Zone zone) {
+        club.getZones().remove(zone);
     }
 }
