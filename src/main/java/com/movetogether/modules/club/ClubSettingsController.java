@@ -179,4 +179,90 @@ public class ClubSettingsController {
         model.addAttribute(club);
         return "club/settings/club";
     }
+
+    @PostMapping("/club/publish")
+    public String publishClub(@CurrentAccount Account account, @PathVariable String path,
+                              RedirectAttributes attributes) {
+        Club club = clubService.getClubToUpdate(account, path);
+        clubService.publish(club);
+        attributes.addFlashAttribute("message", "클럽을 공개했습니다.");
+        return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+    }
+
+    @PostMapping("/club/close")
+    public String closeClub(@CurrentAccount Account account, @PathVariable String path,
+                            RedirectAttributes attributes) {
+        Club club = clubService.getClubToUpdate(account, path);
+        clubService.close(club);
+        attributes.addFlashAttribute("message", "클럽을 종료했습니다.");
+        return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+    }
+
+    @PostMapping("/recruit/start")
+    public String startRecruit(@CurrentAccount Account account, @PathVariable String path,
+                               RedirectAttributes attributes) {
+        Club club = clubService.getClubToUpdate(account, path);
+        if (!club.canUpdateRecruiting()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
+            return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+        }
+
+        clubService.startRecruit(club);
+        attributes.addFlashAttribute("message", "인원 모집을 시작합니다.");
+        return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+    }
+
+    @PostMapping("/recruit/stop")
+    public String stopRecruit(@CurrentAccount Account account, @PathVariable String path,
+                              RedirectAttributes attributes) {
+        Club club = clubService.getClubToUpdate(account, path);
+        if (!club.canUpdateRecruiting()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여려번 변경할 수 없습니다.");
+            return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+        }
+
+        clubService.stopRecruit(club);
+        attributes.addFlashAttribute("message", "인원 모집을 종료합니다.");
+        return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+    }
+
+    @PostMapping("/club/path")
+    public String updateClubPath(@CurrentAccount Account account, @PathVariable String path, String newPath,
+                                 Model model, RedirectAttributes attributes){
+        Club club = clubService.getClubToUpdate(account, path);
+        if (!clubService.isValidPath(newPath)){
+            model.addAttribute(club);
+            model.addAttribute(account);
+            model.addAttribute("studyPathError", "해당 클럽 경로는 사용할 수 없습니다. 다른 값을 입력하세요");
+            return "club/settings/club";
+        }
+
+        clubService.updateClubPath(club, newPath);
+        attributes.addFlashAttribute("message", "클럽 경로를 수정했습니다.");
+        return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+    }
+
+    @PostMapping("/club/title")
+    public String updateClubTitle(@CurrentAccount Account account, @PathVariable String path,
+                                  Model model, RedirectAttributes attributes, String newTitle){
+        Club club = clubService.getClubToUpdate(account, path);
+        if (!clubService.isValidTitle(newTitle)){
+            model.addAttribute(account);
+            model.addAttribute(club);
+            model.addAttribute("clubTitleError", "클럽 이름을 다시 입력하세요");
+            return "club/settings/club";
+        }
+
+        clubService.updateTitle(club, newTitle);
+        attributes.addFlashAttribute("message", "클럽 이름을 수정했습니다.");
+        return "redirect:/club/" + club.getEncodePath() + "/settings/club";
+    }
+
+    @PostMapping("/club/remove")
+    public String removeClub(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Club club = clubService.getClubToUpdate(account, path);
+        clubService.removeClub(club);
+        return "redirect:/";
+    }
+
 }

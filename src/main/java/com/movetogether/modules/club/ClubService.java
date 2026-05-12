@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.movetogether.modules.club.form.ClubForm.VALID_PATH_PATTERN;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -98,5 +100,47 @@ public class ClubService {
 
     public void removeZone(Club club, Zone zone) {
         club.getZones().remove(zone);
+    }
+
+    public void publish(Club club) {
+        club.publish();
+    }
+
+    public void close(Club club) {
+        club.close();
+    }
+
+    public void startRecruit(Club club) {
+        club.startRecruit();
+    }
+
+    public void stopRecruit(Club club) {
+        club.stopRecruit();
+    }
+
+    public boolean isValidPath(String newPath) {
+        if (!newPath.matches(VALID_PATH_PATTERN)) {
+            return false;
+        }
+
+        return !clubRepository.existsByPath(newPath);
+    }
+
+    public void updateClubPath(Club club, String newPath) {
+        club.setPath(newPath);
+    }
+
+    public boolean isValidTitle(String newTitle) {
+        return newTitle.length() <= 20;
+    }
+
+    public void updateTitle(Club club, String newTitle) {
+        club.setTitle(newTitle);
+    }
+
+    public void removeClub(Club club) {
+        if (club.isRemovable()) {
+            clubRepository.delete(club);
+        }
     }
 }

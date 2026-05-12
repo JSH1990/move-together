@@ -22,6 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,11 +33,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockMvcTest
 public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
 
-    @Autowired MockMvc mockMvc;
-    @Autowired ClubFactory clubFactory;
-    @Autowired AccountFactory accountFactory;
-    @Autowired AccountRepository accountRepository;
-    @Autowired ClubRepository clubRepository;
+    @Autowired
+    MockMvc mockMvc;
+    @Autowired
+    ClubFactory clubFactory;
+    @Autowired
+    AccountFactory accountFactory;
+    @Autowired
+    AccountRepository accountRepository;
+    @Autowired
+    ClubRepository clubRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -94,7 +101,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         Club club = clubFactory.createClub("test-path", test);
 
         mockMvc.perform(post("/club/" + club.getPath() + "/settings/description")
-                .param("shortDescription", "shortDescription")
+                        .param("shortDescription", "shortDescription")
                         .param("fullDescription", "fullDescription")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -123,7 +130,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @WithAccount("test")
     @DisplayName("배너 화면 보이는지 확인")
     @Test
-    void updateBannerForm() throws Exception{
+    void updateBannerForm() throws Exception {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
 
@@ -137,7 +144,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @WithAccount("test")
     @DisplayName("클럽 배너 수정")
     @Test
-    void updateBanner() throws Exception{
+    void updateBanner() throws Exception {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
 
@@ -155,7 +162,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @WithAccount("test")
     @DisplayName("클럽 배너 활성")
     @Test
-    void updateBanner_active() throws Exception{
+    void updateBanner_active() throws Exception {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
         club.setUseBanner(true);
@@ -172,7 +179,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @WithAccount("test")
     @DisplayName("클럽 배너 비활성")
     @Test
-    void updateBanner_inactive() throws Exception{
+    void updateBanner_inactive() throws Exception {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
         club.setUseBanner(false);
@@ -189,7 +196,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @WithAccount("test")
     @DisplayName("클럽 태그 화면 나오는지 확인")
     @Test
-    void updateTagsForm() throws Exception{
+    void updateTagsForm() throws Exception {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
 
@@ -208,18 +215,18 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
         TagForm tagForm = new TagForm();
-        
+
         tagForm.setTagTitle("testTag");
-        
+
         mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/tags/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tagForm))
-                .with(csrf()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
         Tag newTag = tagRepository.findByTitle("testTag");
         assertNotNull(newTag);
-        Club updatedClub  = clubRepository.findByPath("test-path");
+        Club updatedClub = clubRepository.findByPath("test-path");
         assertTrue(updatedClub.getTags().contains(newTag));
     }
 
@@ -237,9 +244,9 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         tagForm.setTagTitle("testTag");
 
         mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/tags/remove")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tagForm))
-                .with(csrf()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
         Club updatedClub = clubRepository.findByPath(club.getPath());
@@ -249,7 +256,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     @WithAccount("test")
     @DisplayName("클럽 Zones 화면 보이는지 확인")
     @Test
-    void updateZoneForm() throws  Exception{
+    void updateZoneForm() throws Exception {
         Account test = accountRepository.findByNickname("test");
         Club club = clubFactory.createClub("test-path", test);
 
@@ -272,14 +279,14 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         zoneForm.setZoneName(testZone.toString());
 
         mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/zones/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(zoneForm))
-                .with(csrf()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
-        Club updatedClub  = clubRepository.findByPath(club.getPath());
+        Club updatedClub = clubRepository.findByPath(club.getPath());
         Zone zone = zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince());
-        assertTrue(updatedClub .getZones().contains(zone));
+        assertTrue(updatedClub.getZones().contains(zone));
     }
 
     @WithAccount("test")
@@ -297,12 +304,154 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
         zoneForm.setZoneName(zone.toString());
 
         mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/zones/remove")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(zoneForm))
-                .with(csrf()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(zoneForm))
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
         Club updateClub = clubRepository.findByPath(club.getPath());
         assertFalse(updateClub.getZones().contains(zoneRepository.findByCityAndProvince(testZone.getCity(), testZone.getProvince())));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 화면 나오는지 확인")
+    @Test
+    void viewClub() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        mockMvc.perform(get("/club/" + club.getEncodePath() + "/settings/club"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("club"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 공개 ")
+    @Test
+    void publishClub() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/club/publish")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(redirectedUrl("/club/" + club.getEncodePath() + "/settings/club"));
+
+        Club updatedClub = clubRepository.findByPath("test-path");
+        assertTrue(updatedClub.isPublished());
+        assertNotNull(updatedClub.getPublishedDateTime());
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 공개 종료")
+    @Test
+    void unpublishClub() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+        club.setPublishedDateTime(LocalDateTime.now());
+        club.setPublished(true);
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/club/close")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(redirectedUrl("/club/" + club.getEncodePath() + "/settings/club"));
+
+        Club updatedClub = clubRepository.findByPath("test-path");
+        assertTrue(updatedClub.isClosed());
+        assertNotNull(updatedClub.getClosedDateTime());
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 인원 모집")
+    @Test
+    void startRecruiting() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+        club.setPublished(true);
+        club.setRecruitingUpdatedDateTime(LocalDateTime.now().minusHours(3));
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/recruit/start")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(redirectedUrl("/club/" + club.getEncodePath() + "/settings/club"));
+
+        Club updatedClub = clubRepository.findByPath("test-path");
+        assertTrue(updatedClub.isRecruiting());
+        assertNotNull(updatedClub.getRecruitingUpdatedDateTime());
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 인원 모집 중단")
+    @Test
+    void stopRecruiting() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+        club.setPublished(false);
+        club.setRecruitingUpdatedDateTime(LocalDateTime.now().minusHours(3));
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/recruit/stop")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(redirectedUrl("/club/" + club.getEncodePath() + "/settings/club"));
+
+        Club updatedClub = clubRepository.findByPath("test-path");
+        assertFalse(updatedClub.isRecruiting());
+        assertNotNull(updatedClub.getRecruitingUpdatedDateTime());
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 경로 수정")
+    @Test
+    void updateClubPath() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/club/path")
+                        .param("newPath", "test-newPath")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(redirectedUrl("/club/" + club.getEncodePath() + "/settings/club"));
+
+        Club newPath = clubRepository.findByPath("test-newPath");
+        assertNotNull(newPath);
+        assertNull(clubRepository.findByPath("test-path"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 title 수정")
+    @Test
+    void updateClubTitle() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/club/title")
+                        .param("newTitle", "newTitle")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(redirectedUrl("/club/" + club.getEncodePath() + "/settings/club"));
+
+        assertTrue(club.getTitle().contains("newTitle"));
+    }
+
+    @WithAccount("test")
+    @DisplayName("클럽 삭제")
+    @Test
+    void deleteClub() throws Exception {
+        Account test = accountRepository.findByNickname("test");
+        Club club = clubFactory.createClub("test-path", test);
+
+        mockMvc.perform(post("/club/" + club.getEncodePath() + "/settings/club/remove")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+
+        assertNull(clubRepository.findByPath("test-path"));
     }
 }
