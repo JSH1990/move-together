@@ -1,18 +1,14 @@
 package com.movetogether.modules.club;
 
 import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.club.event.ClubUpdateEvent;
 import com.movetogether.modules.club.form.ClubDescriptionForm;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.zone.Zone;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 import static com.movetogether.modules.club.form.ClubForm.VALID_PATH_PATTERN;
@@ -24,7 +20,6 @@ public class ClubService {
 
     private final ClubRepository clubRepository;
     private final ModelMapper modelMapper;
-    private final ApplicationEventPublisher eventPublisher;
 
     public Club createNewClub(Club club, Account account) {
         Club newClub = clubRepository.save(club);
@@ -142,5 +137,18 @@ public class ClubService {
         if (club.isRemovable()) {
             clubRepository.delete(club);
         }
+    }
+
+    public Club getClubToUpdateStatus(Account account, String path) {
+        Club club = clubRepository.findClubWithManagersByPath(path);
+        checkIfExistingClub(path, club);
+        checkIfManager(account, club);
+        return club;
+    }
+
+    public Club getClubToEnroll(String path) {
+        Club club = clubRepository.findClubOnlyByPath(path);
+        checkIfExistingClub(path, club);
+        return club;
     }
 }

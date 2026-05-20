@@ -233,7 +233,7 @@ public class ClubSettingsController {
         if (!clubService.isValidPath(newPath)){
             model.addAttribute(club);
             model.addAttribute(account);
-            model.addAttribute("studyPathError", "해당 클럽 경로는 사용할 수 없습니다. 다른 값을 입력하세요");
+            model.addAttribute("clubPathError", "해당 클럽 경로는 사용할 수 없습니다. 다른 값을 입력하세요");
             return "club/settings/club";
         }
 

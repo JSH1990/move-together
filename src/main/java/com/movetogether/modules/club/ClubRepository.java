@@ -22,4 +22,9 @@ public interface ClubRepository extends JpaRepository<Club, Long>, ClubRepositor
 
     @EntityGraph(attributePaths = "members")
     Club findClubWithMembersByPath(String path);
+
+    @EntityGraph(attributePaths = "managers")
+    Club findClubWithManagersByPath(String path);
+
+    Club findClubOnlyByPath(String path);
 }

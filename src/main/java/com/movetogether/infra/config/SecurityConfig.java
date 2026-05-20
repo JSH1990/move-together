@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/", "/login", "/sign-up", "/check-email-token",
-                                "/email-login", "/check-email-login", "/login-link", "/search/study","/login-by-email").permitAll()
+                                "/email-login", "/check-email-login", "/login-link", "/search/club","/login-by-email").permitAll()
                         .requestMatchers(HttpMethod.GET, "/profile/*").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
-                // 기본 로그아웃 처리 (Security가 자동으로 제공)
+                // 기본 로그아웃 처리
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")  // 로그아웃 후 이동 경로
                         .permitAll()

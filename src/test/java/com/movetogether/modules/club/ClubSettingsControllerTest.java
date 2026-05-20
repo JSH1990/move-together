@@ -327,7 +327,7 @@ public class ClubSettingsControllerTest extends AbstractContainerBaseTest {
     }
 
     @WithAccount("test")
-    @DisplayName("클럽 공개 ")
+    @DisplayName("클럽 공개")
     @Test
     void publishClub() throws Exception {
         Account test = accountRepository.findByNickname("test");
