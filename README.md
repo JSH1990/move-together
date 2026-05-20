@@ -1,5 +1,5 @@
 # 🏃 Move Together
-[![CI](https://github.com/expis4/moveTogether/actions/workflows/gradle.yml/badge.svg)](https://github.com/JSH1990/moveTogether/actions)
+[![CI](https://github.com/JSH1990/move-together/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JSH1990/move-together/actions/workflows/ci.yml)
 
 운동을 함께 즐기고 사람들과 소통할 수 있는 커뮤니티 플랫폼입니다.  
 클럽 생성, 모임(Event) 관리, 참가 신청, 알림 기능 등을 제공하며  
