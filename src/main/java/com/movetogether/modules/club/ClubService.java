@@ -1,11 +1,14 @@
 package com.movetogether.modules.club;
 
-import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.club.event.ClubCreatedEvent;
+import com.movetogether.modules.club.event.ClubUpdateEvent;
 import com.movetogether.modules.club.form.ClubDescriptionForm;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.zone.Zone;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ public class ClubService {
 
     private final ClubRepository clubRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Club createNewClub(Club club, Account account) {
         Club newClub = clubRepository.save(club);
@@ -99,18 +103,22 @@ public class ClubService {
 
     public void publish(Club club) {
         club.publish();
+        this.eventPublisher.publishEvent(new ClubCreatedEvent(club));
     }
 
     public void close(Club club) {
         club.close();
+        eventPublisher.publishEvent(new ClubUpdateEvent(club, "클럽을 종료했습니다."));
     }
 
     public void startRecruit(Club club) {
         club.startRecruit();
+        eventPublisher.publishEvent(new ClubUpdateEvent(club, "팀원 모집을 시작합니다."));
     }
 
     public void stopRecruit(Club club) {
         club.stopRecruit();
+        eventPublisher.publishEvent(new ClubUpdateEvent(club, "팀원 모집을 중단했습니디ㅏ."));
     }
 
     public boolean isValidPath(String newPath) {

@@ -1,7 +1,7 @@
 package com.movetogether.modules.event;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.CurrentAccount;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.CurrentAccount;
 import com.movetogether.modules.club.Club;
 import com.movetogether.modules.club.ClubRepository;
 import com.movetogether.modules.club.ClubService;

@@ -1,8 +1,8 @@
-package com.movetogether.modules.acount.validator;
+package com.movetogether.modules.account.validator;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.AccountRepository;
-import com.movetogether.modules.acount.form.NicknameForm;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.AccountRepository;
+import com.movetogether.modules.account.form.NicknameForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

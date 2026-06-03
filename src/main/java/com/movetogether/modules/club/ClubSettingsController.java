@@ -1,7 +1,7 @@
 package com.movetogether.modules.club;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.CurrentAccount;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.CurrentAccount;
 import com.movetogether.modules.club.form.ClubDescriptionForm;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.tag.TagForm;

@@ -1,9 +1,8 @@
 package com.movetogether.modules.event;
 
-import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.account.Account;
 import com.movetogether.modules.club.Club;
 import com.movetogether.modules.event.form.EventForm;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

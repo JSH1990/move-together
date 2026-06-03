@@ -1,4 +1,4 @@
-package com.movetogether.modules.acount;
+package com.movetogether.modules.account;
 
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.zone.Zone;

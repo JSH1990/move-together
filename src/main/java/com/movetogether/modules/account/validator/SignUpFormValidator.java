@@ -1,7 +1,7 @@
-package com.movetogether.modules.acount.validator;
+package com.movetogether.modules.account.validator;
 
-import com.movetogether.modules.acount.AccountRepository;
-import com.movetogether.modules.acount.form.SignUpForm;
+import com.movetogether.modules.account.AccountRepository;
+import com.movetogether.modules.account.form.SignUpForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

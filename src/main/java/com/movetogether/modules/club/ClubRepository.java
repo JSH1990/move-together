@@ -1,7 +1,6 @@
 package com.movetogether.modules.club;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.UserAccount;
+import com.movetogether.modules.account.Account;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -27,4 +26,10 @@ public interface ClubRepository extends JpaRepository<Club, Long>, ClubRepositor
     Club findClubWithManagersByPath(String path);
 
     Club findClubOnlyByPath(String path);
+
+    @EntityGraph(attributePaths = {"zones", "tags"})
+    Club findClubWithTagsAndZonesById(Long id);
+
+    @EntityGraph(attributePaths = {"managers", "members"})
+    Club findClubWithManagersAndMemebersById(Long id);
 }

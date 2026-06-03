@@ -1,15 +1,28 @@
 package com.movetogether.modules.club.event;
 
 import com.movetogether.infra.config.AppProperties;
+import com.movetogether.infra.mail.EmailMessage;
 import com.movetogether.infra.mail.EmailService;
-import com.movetogether.modules.acount.AccountRepository;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.AccountPredicates;
+import com.movetogether.modules.account.AccountRepository;
+import com.movetogether.modules.club.Club;
 import com.movetogether.modules.club.ClubRepository;
+import com.movetogether.modules.notification.Notification;
+import com.movetogether.modules.notification.NotificationRepository;
+import com.movetogether.modules.notification.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @Async
@@ -23,4 +36,70 @@ public class ClubEventListener {
     private final EmailService emailService;
     private final TemplateEngine templateEngine;
     private final AppProperties appProperties;
+    private final NotificationRepository notificationRepository;
+
+    @EventListener
+    public void handleClubCreateEvent(ClubCreatedEvent clubCreatedEvent){
+        Club club = clubRepository.findClubWithTagsAndZonesById(clubCreatedEvent.getClub().getId());
+        Iterable<Account> accounts = accountRepository.findAll(AccountPredicates.findByTagsAndZones(club.getTags(), club.getZones()));
+        accounts.forEach(account -> {
+            if(account.isClubCreatedByEmail()){
+                sendClubCreatedEmail(club, account, "새로운 클럽이 생겼습니다.",
+                        "Move Together, '" + club.getTitle() + "' Club이 생겼습니다.");
+            }
+
+            if (account.isClubCreatedByWeb()){
+                createNotification(club, account, club.getShortDescription(), NotificationType.CLUB_CREATED);
+            }
+        });
+    }
+
+    @EventListener
+    public void handleClubUpdateEvent(ClubUpdateEvent clubUpdateEvent){
+        Club club = clubRepository.findClubWithManagersAndMemebersById(clubUpdateEvent.getClub().getId());
+        Set<Account> accounts = new HashSet<>();
+        accounts.addAll(club.getManagers());
+        accounts.addAll(club.getMembers());
+
+        accounts.forEach(account -> {
+            if (account.isClubUpdatedByEmail()) {
+                sendClubCreatedEmail(club, account, clubUpdateEvent.getMessage(),
+                        "Move Together, '" + club.getTitle() + "' 클럽에 새소식이 있습니다.");
+            }
+
+            if (account.isClubUpdatedByWeb()) {
+                createNotification(club, account, clubUpdateEvent.getMessage(), NotificationType.CLUB_UPDATED);
+            }
+        });
+    }
+
+    private void createNotification(Club club, Account account, String message, NotificationType notificationType) {
+        Notification notification = new Notification();
+        notification.setTitle(club.getTitle());
+        notification.setLink("/club/" + club.getEncodePath());
+        notification.setChecked(false);
+        notification.setCreatedDateTime(LocalDateTime.now());
+        notification.setMessage(message);
+        notification.setAccount(account);
+        notification.setNotificationType(notificationType);
+        notificationRepository.save(notification);
+    }
+
+    private void sendClubCreatedEmail(Club club, Account account, String contextMessage, String emailSubject) {
+        Context context = new Context();
+        context.setVariable("nickname", account.getNickname());
+        context.setVariable("link", "/club/" + club.getEncodePath());
+        context.setVariable("linkName", club.getTitle());
+        context.setVariable("message", contextMessage);
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/simple-link", context);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .subject(emailSubject)
+                .to(account.getEmail())
+                .message(message)
+                .build();
+
+        emailService.sendEmail(emailMessage);
+    }
 }

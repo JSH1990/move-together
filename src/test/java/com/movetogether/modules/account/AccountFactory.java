@@ -1,7 +1,5 @@
 package com.movetogether.modules.account;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

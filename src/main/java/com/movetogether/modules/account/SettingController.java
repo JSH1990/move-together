@@ -1,12 +1,12 @@
-package com.movetogether.modules.acount;
+package com.movetogether.modules.account;
 
-import com.movetogether.modules.acount.form.NicknameForm;
+import com.movetogether.modules.account.form.NicknameForm;
 
-import com.movetogether.modules.acount.form.Notifications;
-import com.movetogether.modules.acount.form.PasswordForm;
-import com.movetogether.modules.acount.form.Profile;
-import com.movetogether.modules.acount.validator.NicknameValidator;
-import com.movetogether.modules.acount.validator.PasswordFormValidator;
+import com.movetogether.modules.account.form.Notifications;
+import com.movetogether.modules.account.form.PasswordForm;
+import com.movetogether.modules.account.form.Profile;
+import com.movetogether.modules.account.validator.NicknameValidator;
+import com.movetogether.modules.account.validator.PasswordFormValidator;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.tag.TagForm;
 import com.movetogether.modules.tag.TagRepository;

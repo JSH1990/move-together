@@ -1,6 +1,6 @@
-package com.movetogether.modules.acount.validator;
+package com.movetogether.modules.account.validator;
 
-import com.movetogether.modules.acount.form.PasswordForm;
+import com.movetogether.modules.account.form.PasswordForm;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

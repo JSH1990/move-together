@@ -2,9 +2,6 @@ package com.movetogether.modules.account;
 
 import com.movetogether.infra.AbstractContainerBaseTest;
 import com.movetogether.infra.MockMvcTest;
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.AccountRepository;
-import com.movetogether.modules.acount.AccountService;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.tag.TagForm;
 import com.movetogether.modules.tag.TagRepository;

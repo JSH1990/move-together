@@ -1,4 +1,4 @@
-package com.movetogether.modules.acount.form;
+package com.movetogether.modules.account.form;
 
 import lombok.Data;
 

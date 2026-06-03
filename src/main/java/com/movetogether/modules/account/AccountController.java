@@ -1,14 +1,11 @@
-package com.movetogether.modules.acount;
+package com.movetogether.modules.account;
 
-import com.movetogether.modules.acount.form.SignUpForm;
-import com.movetogether.modules.acount.validator.SignUpFormValidator;
+import com.movetogether.modules.account.form.SignUpForm;
+import com.movetogether.modules.account.validator.SignUpFormValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;

@@ -1,6 +1,6 @@
 package com.movetogether.modules.event;
 
-import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.account.Account;
 import com.movetogether.modules.club.Club;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.movetogether.modules.event;
 
-import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.account.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

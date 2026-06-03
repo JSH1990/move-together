@@ -1,7 +1,7 @@
 package com.movetogether.modules.club;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.UserAccount;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.UserAccount;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.zone.Zone;
 import jakarta.persistence.*;

@@ -1,10 +1,9 @@
 package com.movetogether.modules.event;
 
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.UserAccount;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.UserAccount;
 import com.movetogether.modules.club.Club;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

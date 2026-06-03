@@ -1,4 +1,4 @@
-package com.movetogether.modules.acount.form;
+package com.movetogether.modules.account.form;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

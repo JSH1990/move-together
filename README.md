@@ -8,6 +8,7 @@ Spring Boot 기반으로 개발되었습니다.
 ---
 
 # 📌 프로젝트 소개
+<img src="./images/main-img.png" width="500"/>
 
 Move Together는 운동을 좋아하는 사람들이  
 관심사 기반 클럽을 만들고 모임을 주최하며 함께 운동할 수 있는 커뮤니티 서비스입니다.

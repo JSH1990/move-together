@@ -1,4 +1,4 @@
-package com.movetogether.modules.acount;
+package com.movetogether.modules.account;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

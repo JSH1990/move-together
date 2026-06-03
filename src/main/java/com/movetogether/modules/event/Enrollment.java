@@ -1,6 +1,6 @@
 package com.movetogether.modules.event;
 
-import com.movetogether.modules.acount.Account;
+import com.movetogether.modules.account.Account;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

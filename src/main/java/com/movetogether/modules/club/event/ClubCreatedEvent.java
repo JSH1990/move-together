@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ClubCreateEvent {
+public class ClubCreatedEvent {
 
     private final Club club;
 }

@@ -4,8 +4,8 @@ import com.movetogether.infra.AbstractContainerBaseTest;
 import com.movetogether.infra.MockMvcTest;
 import com.movetogether.modules.account.AccountFactory;
 import com.movetogether.modules.account.WithAccount;
-import com.movetogether.modules.acount.Account;
-import com.movetogether.modules.acount.AccountRepository;
+import com.movetogether.modules.account.Account;
+import com.movetogether.modules.account.AccountRepository;
 import com.movetogether.modules.club.Club;
 import com.movetogether.modules.club.ClubFactory;
 

@@ -2,9 +2,9 @@ package com.movetogether.modules.main;
 
 import com.movetogether.infra.AbstractContainerBaseTest;
 import com.movetogether.infra.MockMvcTest;
-import com.movetogether.modules.acount.AccountRepository;
-import com.movetogether.modules.acount.AccountService;
-import com.movetogether.modules.acount.form.SignUpForm;
+import com.movetogether.modules.account.AccountRepository;
+import com.movetogether.modules.account.AccountService;
+import com.movetogether.modules.account.form.SignUpForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
