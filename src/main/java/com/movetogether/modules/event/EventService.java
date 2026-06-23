@@ -2,9 +2,13 @@ package com.movetogether.modules.event;
 
 import com.movetogether.modules.account.Account;
 import com.movetogether.modules.club.Club;
+import com.movetogether.modules.club.event.ClubUpdateEvent;
+import com.movetogether.modules.event.event.EnrollmentAcceptedEvent;
+import com.movetogether.modules.event.event.EnrollmentRejectedEvent;
 import com.movetogether.modules.event.form.EventForm;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,21 +21,28 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Event createEvent(Event event, Club club, Account account) {
         event.setCreatedBy(account);
         event.setCreatedDateTime(LocalDateTime.now());
         event.setClub(club);
+        eventPublisher.publishEvent(new ClubUpdateEvent(event.getClub(),
+                "'" + event.getTitle() + "' 모임을 만들었습니다."));
         return eventRepository.save(event);
     }
 
     public void updateEvent(Event event, EventForm eventForm) {
         modelMapper.map(eventForm, event);
         event.acceptWaitingList();
+        eventPublisher.publishEvent(new ClubUpdateEvent(event.getClub(),
+                "'" + event.getTitle() + "' 모임 정보를 수정했으니 확인하세요."));
     }
 
     public void deleteEvent(Event event) {
         eventRepository.delete(event);
+        eventPublisher.publishEvent(new ClubUpdateEvent(event.getClub(),
+                "'" + event.getTitle() + "' 모임을 취소했습니다."));
     }
 
     public void newEnrollment(Event event, Account account) {
@@ -56,10 +67,12 @@ public class EventService {
 
     public void acceptEnrollment(Event event, Enrollment enrollment) {
         event.accept(enrollment);
+        eventPublisher.publishEvent(new EnrollmentAcceptedEvent(enrollment));
     }
 
     public void rejectEnrollment(Event event, Enrollment enrollment) {
         event.reject(enrollment);
+        eventPublisher.publishEvent(new EnrollmentRejectedEvent(enrollment));
     }
 
     public void checkInEnrollment(Enrollment enrollment) {

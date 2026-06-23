@@ -51,7 +51,6 @@ public class ClubService {
         club.addMember(account);
     }
 
-
     public void removeMember(Club club, Account account) {
         club.removeMember(account);
     }
@@ -144,6 +143,8 @@ public class ClubService {
     public void removeClub(Club club) {
         if (club.isRemovable()) {
             clubRepository.delete(club);
+        } else {
+            throw new IllegalArgumentException("클럽을 삭제할 수 없습니다.");
         }
     }
 

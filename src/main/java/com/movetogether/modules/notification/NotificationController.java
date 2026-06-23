@@ -52,7 +52,7 @@ public class NotificationController {
         for (var notification : notifications) {
             switch (notification.getNotificationType()) {
                 case CLUB_CREATED: newClubNotifications.add(notification); break;
-                case CLUB_ENROLLMENT: eventEnrollmentNotifications.add(notification); break;
+                case EVENT_ENROLLMENT: eventEnrollmentNotifications.add(notification); break;
                 case CLUB_UPDATED: watchingClubNotifications.add(notification); break;
             }
         }

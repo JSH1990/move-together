@@ -56,7 +56,7 @@ public class ClubEventListener {
 
     @EventListener
     public void handleClubUpdateEvent(ClubUpdateEvent clubUpdateEvent){
-        Club club = clubRepository.findClubWithManagersAndMemebersById(clubUpdateEvent.getClub().getId());
+        Club club = clubRepository.findStudyWithManagersAndMembersById(clubUpdateEvent.getClub().getId());
         Set<Account> accounts = new HashSet<>();
         accounts.addAll(club.getManagers());
         accounts.addAll(club.getMembers());

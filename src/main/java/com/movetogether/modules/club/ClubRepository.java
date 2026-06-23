@@ -31,5 +31,5 @@ public interface ClubRepository extends JpaRepository<Club, Long>, ClubRepositor
     Club findClubWithTagsAndZonesById(Long id);
 
     @EntityGraph(attributePaths = {"managers", "members"})
-    Club findClubWithManagersAndMemebersById(Long id);
+    Club findStudyWithManagersAndMembersById(Long id);
 }
