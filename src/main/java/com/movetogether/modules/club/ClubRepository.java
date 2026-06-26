@@ -1,6 +1,7 @@
 package com.movetogether.modules.club;
 
 import com.movetogether.modules.account.Account;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -31,5 +32,11 @@ public interface ClubRepository extends JpaRepository<Club, Long>, ClubRepositor
     Club findClubWithTagsAndZonesById(Long id);
 
     @EntityGraph(attributePaths = {"managers", "members"})
-    Club findStudyWithManagersAndMembersById(Long id);
-}
+    Club findClubWithManagersAndMembersById(Long id);
+
+    @EntityGraph(attributePaths = {"zones", "tags"})
+    List<Club> findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(boolean published, boolean closed);
+
+    List<Club> findFirst5ByManagersContainingAndClosedOrderByPublishedDateTimeDesc(Account account, boolean closed);
+
+    List<Club> findFirst5ByMembersContainingAndClosedOrderByPublishedDateTimeDesc(Account account, boolean closed);}

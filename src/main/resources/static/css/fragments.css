@@ -41,8 +41,25 @@ a:hover {
     background-position: center 80%;
 }
 
+
+mark {
+    padding: 0;
+    background: transparent;
+    background: linear-gradient(to right, #f0ad4e 50%, transparent 50%);
+    background-position: right bottom;
+    background-size: 200% 100%;
+    transition: all .5s ease;
+    color: #fff;
+}
+
+mark.animate {
+    background-position: left bottom;
+    color: #000;
+}
+
 /* ===== Club Banner ===== */
 #club-logo img {
     height: 185px;
     object-fit: cover;
 }
+

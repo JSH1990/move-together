@@ -1,19 +1,40 @@
 package com.movetogether.modules.club;
 
+import com.movetogether.modules.account.QAccount;
 import com.movetogether.modules.tag.QTag;
 import com.movetogether.modules.tag.Tag;
 import com.movetogether.modules.zone.QZone;
 import com.movetogether.modules.zone.Zone;
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.JPQLQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
 import java.util.Set;
 
-public class ClubRepositoryExtensionImpl extends QuerydslRepositorySupport implements ClubRepositoryExtension{
+public class ClubRepositoryExtensionImpl extends QuerydslRepositorySupport implements ClubRepositoryExtension {
 
     public ClubRepositoryExtensionImpl() {
         super(Club.class);
+    }
+
+    @Override
+    public Page<Club> findByKeyword(String keyword, Pageable pageable) {
+        QClub club = QClub.club;
+        JPQLQuery<Club> query = from(club).where(club.published.isTrue()
+                        .and(club.title.containsIgnoreCase(keyword))
+                        .or(club.tags.any().title.containsIgnoreCase(keyword))
+                        .or(club.zones.any().localNameOfCity.containsIgnoreCase(keyword)))
+                .leftJoin(club.tags, QTag.tag).fetchJoin()
+                .leftJoin(club.zones, QZone.zone).fetchJoin()
+                .leftJoin(club.members, QAccount.account).fetchJoin()
+                .distinct();
+        JPQLQuery<Club> pageableQuery = getQuerydsl().applyPagination(pageable, query);
+        QueryResults<Club> fetchResults = pageableQuery.fetchResults();
+        return new PageImpl<>(fetchResults.getResults(), pageable, fetchResults.getTotal());
     }
 
     @Override
@@ -28,7 +49,6 @@ public class ClubRepositoryExtensionImpl extends QuerydslRepositorySupport imple
                 .orderBy(club.publishedDateTime.desc())
                 .distinct()
                 .limit(9);
-
         return query.fetch();
     }
 }

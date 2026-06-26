@@ -1,16 +1,20 @@
 package com.movetogether.modules.event;
 
 import com.movetogether.modules.account.Account;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@NamedEntityGraph(
+    name = "Enrollment.withEventAndClub" ,
+        attributeNodes = {
+            @NamedAttributeNode(value = "event", subgraph = "club")
+        },
+        subgraphs = @NamedSubgraph(name = "club", attributeNodes = @NamedAttributeNode("club"))
+)
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
 public class Enrollment {

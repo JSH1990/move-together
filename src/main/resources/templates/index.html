@@ -17,8 +17,8 @@
 </section>
 <div class="container">
     <div class="row justify-content-center pt-3">
-                    <!--        club-list -->
-    </div>
+        <div th:replace="fragments.html :: club-list (clubList=${clubList})"></div>    </div>
+
 </div>
 <div th:replace="~{fragments.html :: footer}"></div>
 <div th:replace="~{fragments.html :: date-time}"></div>
