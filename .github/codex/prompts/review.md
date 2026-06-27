@@ -17,4 +17,6 @@ Keep the review concise. Report only high-impact findings with file and line ref
 
 Do not modify files in this workflow.
 
-//test
+Write the pull request review in Korean. Use concise, developer-friendly Korean. Keep file paths, class names, method names, and commands in their original form.
+
+//test2
