@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments.html :: head"></head>
+<head th:replace="~{fragments.html :: head}"></head>
 <body class="bg-light">
-    <div th:replace="fragments.html :: main-nav"></div>
+    <div th:replace="~{fragments.html :: main-nav}"></div>
     <div class="alert alert-warning" role="alert" th:if="${account != null && !account?.emailVerified}">
         Move Together 가입을 완료하려면 <a href="#" th:href="@{/check-email(email=${account.email})}" class="alert-link">계정 인증 이메일을 확인</a>하세요.
     </div>
@@ -52,7 +52,7 @@
                 <h5 class="font-weight-light mt-3" th:if="${#lists.isEmpty(clubList)}">관련 클럽이 없습니다.</h5>
                 <h5 class="font-weight-light mt-3" th:if="${!#lists.isEmpty(clubList)}">주요 활동 지역의 관심 주제 클럽</h5>
                 <div class="row justify-content-center">
-                    <div th:replace="fragments.html :: club-list (clubList=${clubList})"></div>
+                    <div th:replace="~{fragments.html :: club-list (clubList=${clubList})}"></div>
                 </div>
             </div>
             <div class="col-md-3">
@@ -76,7 +76,7 @@
             </div>
         </div>
     </div>
-    <div th:replace="fragments.html :: footer"></div>
-    <div th:replace="fragments.html :: date-time"></div>
+    <div th:replace="~{fragments.html :: footer}"></div>
+    <div th:replace="~{fragments.html :: date-time}"></div>
 </body>
 </html>

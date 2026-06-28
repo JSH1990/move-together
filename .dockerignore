@@ -1,0 +1,17 @@
+.git
+.github
+.gradle
+.idea
+.env
+.env.*
+build/*
+!build/libs/
+!build/libs/*.jar
+out
+*.iml
+
+src/main/resources/static/node_modules
+src/main/resources/static/package-lock.json
+
+Dockerfile
+.dockerignore

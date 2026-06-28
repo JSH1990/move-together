@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments.html :: head"></head>
+<head th:replace="~{fragments.html :: head}"></head>
 <body class="bg-light">
-<div th:replace="fragments.html :: main-nav"></div>
+<div th:replace="~{fragments.html :: main-nav}"></div>
 <div class="container">
     <div class="py-5 text-center">
         <p class="lead" th:if="${clubPage.getTotalElements() == 0}">
@@ -92,8 +92,8 @@
     </div>
 
 </div>
-<div th:replace="fragments.html :: footer"></div>
-<script th:replace="fragments.html :: date-time"></script>
+<div th:replace="~{fragments.html :: footer}"></div>
+<script th:replace="~{fragments.html :: date-time}"></script>
 <script src="/node_modules/mark.js/dist/jquery.mark.min.js"></script>
 <script type="application/javascript">
     $(function(){
